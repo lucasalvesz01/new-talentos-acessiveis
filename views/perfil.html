@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Talentos Acessíveis</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Helvetica, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(white, #1E86DB);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #1E3A8A;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 400px;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 24px;
+            color: #1E86DB;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 15px;
+        }
+
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .profile-pic img {
+            width: 100%;
+            height: auto;
+        }
+
+        .label-inline {
+            font-size: 16px;
+            color: #333;
+            margin: 5px 0;
+        }
+
+        .form-group {
+            margin: 15px 0;
+            width: 100%;
+        }
+
+        label {
+            font-size: 12px;
+            color: #1E3A8A;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-control-file {
+            display: block;
+            margin: 10px auto;
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #D1D5DB;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .btn {
+            padding: 10px;
+            background-color: #1E86DB;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #155a9d;
+        }
+
+        .text-note {
+            font-size: 10px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Perfil</h2>
+        <div class="profile-container">
+            <div class="profile-pic" id="profilePic">
+                <img id="profileImage" src="" alt="Imagem de Perfil" style="display: none;">
+                <div id="placeholderText">Imagem de Perfil</div>
+            </div>
+            <input type="file" id="uploadImage" accept="image/*" style="display: none;" onchange="loadImage(event)">
+            <button onclick="document.getElementById('uploadImage').click();" class="btn">Adicionar Foto</button>
+            <div id="nomePerfil" class="label-inline">Nome do usuário</div>
+            <div id="idadePerfil" class="label-inline">Idade: 24</div>
+            <div id="deficienciaPerfil" class="label-inline">Deficiência: outros</div>
+            <div id="habilidadesPerfil" class="label-inline">Habilidades: </div>
+            <div id="sobrePerfil" class="label-inline">Sobre você: </div>            
+        </div>
+
+        <!-- Botão "Postar Perfil" -->
+        <button onclick="salvarPerfil()" class="btn">Postar Perfil</button>
+
+        <!-- Novo Botão "Ver Feed" -->
+        <button onclick="window.location.href='feed.html'" class="btn" style="margin-top: 10px;">Ver Feed</button>
+    </div>
+
+    <script>
+        // Função para carregar os dados do perfil
+        function carregarPerfil() {
+            const usuarioData = JSON.parse(localStorage.getItem("usuario"));
+            
+            if (usuarioData) {
+                document.getElementById("nomePerfil").textContent = usuarioData.usuario || "Nome não encontrado";
+                
+                // Calcular a idade com base na data de nascimento
+                const dataNascimento = new Date(usuarioData.dataNascimento);
+                const hoje = new Date();
+                let idade = hoje.getFullYear() - dataNascimento.getFullYear();
+                const mes = hoje.getMonth() - dataNascimento.getMonth();
+                
+                if (mes < 0 || (mes === 0 && hoje.getDate() < dataNascimento.getDate())) {
+                    idade--;
+                }
+                
+                document.getElementById("idadePerfil").textContent = `Idade: ${idade}`;
+                document.getElementById("deficienciaPerfil").textContent = `Deficiência: ${usuarioData.deficiencia || "Deficiência não encontrada"}`;
+                document.getElementById("habilidadesPerfil").textContent = `Habilidades: ${usuarioData.habilidades || "Habilidades não encontradas"}`;
+                document.getElementById("sobrePerfil").textContent = `Sobre você: ${usuarioData.sobre || "Descrição não encontrada"}`;
+            } else {
+                alert("Nenhum dado de usuário encontrado.");
+            }
+        }
+
+
+
+        window.onload = carregarPerfil;
+
+        // Função para exibir a imagem do perfil carregada
+        function loadImage(event) {
+            const profileImage = document.getElementById('profileImage');
+            const placeholderText = document.getElementById('placeholderText');
+            const usuarioData = JSON.parse(localStorage.getItem("usuario")) || {};
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                profileImage.src = e.target.result;
+                profileImage.style.display = 'block';
+                placeholderText.style.display = 'none';
+                
+                // Armazena a imagem no localStorage
+                usuarioData.profileImage = e.target.result;
+                localStorage.setItem("usuario", JSON.stringify(usuarioData));
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        // Função para salvar o perfil (simples armazenamento local)
+        function salvarPerfil() {
+            // Captura os dados do usuário
+            const nome = document.getElementById("nomePerfil").textContent.replace("Nome: ", "");
+            const idade = document.getElementById("idadePerfil").textContent.replace("Idade: ", "");
+            const deficiencia = document.getElementById("deficienciaPerfil").textContent.replace("Deficiência: ", "");
+            const habilidades = document.getElementById("habilidadesPerfil").textContent.replace("Habilidades: ", "");
+            const sobre = document.getElementById("sobrePerfil").textContent.replace("Sobre você: ", "");
+
+            // Cria um objeto com os dados do usuário
+            const usuarioData = {
+                nome,
+                idade,
+                deficiencia,
+                habilidades,
+                sobre,
+                profileImage: document.getElementById("profileImage").src || null
+            };
+
+            // Recupera os perfis existentes do localStorage ou inicia um array vazio
+            const perfis = JSON.parse(localStorage.getItem("perfis")) || [];
+
+            // Adiciona o novo perfil ao array de perfis
+            perfis.push(usuarioData);
+
+            // Salva o array atualizado no localStorage
+            localStorage.setItem("perfis", JSON.stringify(perfis));
+
+            alert("Perfil salvo com sucesso!");
+            window.location.href = "feed.html"; // Redireciona para o feed
+        }
+
+    </script>
+</body>
+</html>

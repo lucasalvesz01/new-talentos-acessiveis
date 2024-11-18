@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talentos Acessíveis</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Helvetica, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(white, #1E86DB);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #1E3A8A;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;  /* Ajusta a largura do fundo */
+            max-width: 400px; /* Limita a largura para centralizar em telas maiores */
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .header {
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            background: linear-gradient(#93C0DC, white);
+            color: #1E86DB;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .header h2 {
+            font-size: 24px;
+            color: #1E86DB;
+            font-family: 'Poppins', sans-serif; /* Fonte exclusiva */
+        }
+
+        .form-toggle {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        .form-toggle button {
+            padding: 8px 14px;
+            margin: 0 3px;
+            background-color: #1E86DB;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .form-toggle button.active {
+            background-color: #155a9d;
+        }
+
+        .form-section {
+            display: none;
+            width: 100%;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            margin-top: 8px;
+            color: #1E86DB;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #D1D5DB;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        button.submit-btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #1E86DB;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        button.submit-btn:hover {
+            background-color: #155a9d;
+        }
+
+        .forgot-password {
+            display: block;
+            text-align: center;
+            margin-top: 8px;
+            color: #1E86DB;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        #sobre {
+            width: 100%;
+            height: 120px; /* Aumenta a altura da caixa */
+            resize: vertical; /* Permite que o usuário redimensione a altura */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Talentos Acessíveis</h2>    
+            <p>Plataforma para integração de pessoas com deficiência no mercado de trabalho.</p>
+        </div>
+
+        <div class="form-toggle">
+            <button onclick="showForm('cadastro')" class="active">Cadastrar</button>
+            <button onclick="showForm('login')">Entrar</button>
+        </div>
+
+        <div id="cadastro" class="form-section active">
+            <form id="cadastroForm">
+                <label for="usuario">Usuário</label>
+                <input type="text" id="usuario" placeholder="Seu nome de usuário" required>
+
+                <label for="email">E-mail</label>
+                <input type="email" id="email" placeholder="Digite seu e-mail" required>
+
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" placeholder="Escolha uma senha segura" required>
+
+                <label for="data-nascimento">Data de Nascimento</label>
+                <input type="date" id="data-nascimento" required>
+
+                <label for="deficiencia">Deficiência</label>
+                <select id="deficiencia" required>
+                    <option value="">Selecione sua deficiência</option>
+                    <option value="cego">Cego</option>
+                    <option value="mudo">Mudo</option>
+                    <option value="surdo">Surdo</option>
+                    <option value="sindrome de down">Sindrome de Down</option>
+                    <option value="cadeirante">Cadeirante</option>
+                    <option value="autista">Autista</option>
+                    <option value="surdo e mudo">Surdo e Mudo</option>
+                    <option value="outros">Outros</option>
+                </select>
+
+                <label for="habilidades">Habilidades</label>
+                <input type="text" id="habilidades" placeholder="Descreva suas habilidades" required>
+
+                <label for="sobre">Sobre você</label>
+                <textarea id="sobre" placeholder="Fale um pouco sobre você" required></textarea>
+
+                <button type="button" onclick="cadastrar()" class="submit-btn">Cadastrar</button>
+            </form>
+        </div>
+
+        <div id="login" class="form-section">
+            <form id="loginForm">
+                <label for="login-email">E-mail</label>
+                <input type="email" id="login-email" placeholder="Digite seu e-mail" required>
+
+                <label for="login-senha">Senha</label>
+                <input type="password" id="login-senha" placeholder="Digite sua senha" required>
+
+                <button type="button" onclick="login()" class="submit-btn">Entrar</button>
+                <a class="forgot-password" onclick="esqueciSenha()">Esqueci minha senha</a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showForm(form) {
+            document.querySelectorAll('.form-section').forEach(section => section.classList.remove('active'));
+            document.querySelectorAll('.form-toggle button').forEach(button => button.classList.remove('active'));
+            document.getElementById(form).classList.add('active');
+            if (form === 'cadastro') {
+                document.querySelector('.form-toggle button:first-child').classList.add('active');
+            } else {
+                document.querySelector('.form-toggle button:last-child').classList.add('active');
+            }
+        }
+
+        async function cadastrar() {
+            const usuario = document.getElementById("usuario").value;
+            const email = document.getElementById("email").value;
+            const senha = document.getElementById("senha").value;
+            const dataNascimento = document.getElementById("data-nascimento").value;
+            const deficiencia = document.getElementById("deficiencia").value;
+            const habilidades = document.getElementById("habilidades").value;
+            const sobre = document.getElementById("sobre").value;
+
+            if (!usuario || !email || !senha || !dataNascimento || !deficiencia || !habilidades || !sobre) {
+                alert("Por favor, preencha todos os campos corretamente.");
+                return;
+            }
+
+            const usuarioData = {
+                usuario: usuario,
+                email: email,
+                senha: senha,
+                dataNascimento: dataNascimento,
+                deficiencia: deficiencia,
+                habilidades: habilidades,
+                sobre: sobre
+            };
+
+            try {
+                const response = await fetch('http://localhost:3000/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(usuarioData)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    localStorage.setItem("usuario", JSON.stringify(usuarioData)); // Armazena os dados no localStorage
+                    alert(result.message); // Sucesso na resposta do servidor
+                    window.location.href = "perfil.html"; // Redirecionamento
+                } else {
+                    alert(result.message); // Erro na resposta do servidor
+                }
+            } catch (error) {
+                console.error('Erro ao enviar dados:', error);
+                alert('Erro ao salvar o usuário. Tente novamente.');
+            }
+        }
+
+
+
+        function login() {
+            const email = document.getElementById("login-email").value;
+            const senha = document.getElementById("login-senha").value;
+
+            if (email === "exemplo@gmail.com" && senha === "123456") {
+                alert("Login realizado com sucesso!");
+            } else {
+                alert("E-mail ou senha incorretos.");
+            }
+        }
+
+        function esqueciSenha() {
+            alert("Instruções para recuperar a senha foram enviadas para o seu e-mail.");
+        }
+    </script>
+</body>
+</html> 

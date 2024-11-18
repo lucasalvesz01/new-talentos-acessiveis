@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed - Talentos Acessíveis</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Helvetica, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(white, #1E86DB);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #1E3A8A;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 600px;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .post {
+            width: 100%;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .profile-pic img {
+            width: 100%;
+            height: auto;
+        }
+
+        .info {
+            margin-bottom: 10px;
+        }
+
+        .btn-download {
+            background-color: #1E86DB;
+            color: #FFFFFF;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .btn-download:hover {
+            background-color: #155a9d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Feed de Perfis</h2>
+        <div id="feedContainer">
+            <!-- Perfis carregados dinamicamente aqui -->
+        </div>
+    </div>
+
+    <script>
+    async function carregarFeed() {
+        try {
+            const response = await fetch('http://localhost:3000/users');
+            if (!response.ok) {
+                throw new Error("Erro ao buscar perfis: " + response.statusText);
+            }
+
+            const usuarios = await response.json();
+            console.log("Perfis recebidos do servidor:", usuarios); // Log dos perfis recebidos
+
+            const feedContainer = document.getElementById("feedContainer");
+            feedContainer.innerHTML = ''; // Limpa o feed antes de preenchê-lo
+
+            usuarios.forEach(usuario => {
+                const postElement = document.createElement("div");
+                postElement.classList.add("post");
+
+                const profilePic = document.createElement("div");
+                profilePic.classList.add("profile-pic");
+
+                // Simula uma imagem ou mostra "Sem imagem"
+                profilePic.textContent = usuario.profileImage ? "Imagem" : "Sem imagem";
+                postElement.appendChild(profilePic);
+
+                const info = document.createElement("div");
+                info.classList.add("info");
+                info.innerHTML = `
+                    <p><strong>Nome:</strong> ${usuario.usuario}</p>
+                    <p><strong>Idade:</strong> ${calcularIdade(usuario.dataNascimento)}</p>
+                    <p><strong>Deficiência:</strong> ${usuario.deficiencia}</p>
+                    <p><strong>Habilidades:</strong> ${usuario.habilidades}</p>
+                    <p><strong>Sobre você:</strong> ${usuario.sobre}</p>
+                `;
+                postElement.appendChild(info);
+
+                // Adiciona o botão de download
+                const btnDownload = document.createElement("a");
+                btnDownload.classList.add("btn-download");
+                btnDownload.textContent = "Baixar Currículo";
+                btnDownload.href = `/download/${usuario.id}`; // Assumindo que há uma rota que gere o currículo
+                btnDownload.download = `${usuario.usuario}_curriculo.pdf`; // Nome do arquivo baixado
+                postElement.appendChild(btnDownload);
+
+                feedContainer.appendChild(postElement);
+            });
+        } catch (error) {
+            console.error("Erro ao carregar o feed:", error);
+        }
+    }
+
+    // Função para calcular idade a partir da data de nascimento
+    function calcularIdade(dataNascimento) {
+        const nascimento = new Date(dataNascimento);
+        const hoje = new Date();
+        let idade = hoje.getFullYear() - nascimento.getFullYear();
+        const mes = hoje.getMonth() - nascimento.getMonth();
+        if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+            idade--;
+        }
+        return idade;
+    }
+
+    window.onload = carregarFeed;
+    </script>
+</body>
+</html>
