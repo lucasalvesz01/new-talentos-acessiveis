@@ -3,27 +3,27 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 const db = require('./config/db'); // Conexão com o banco de dados
 const userRoutes = require('./routes/userRoutes'); // Rotas de usuário
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middlewares
 app.use(bodyParser.json());
 app.use(cors());
 
-const PORT = process.env.PORT || 3000;
+// Configurar a pasta de arquivos estáticos (views)
+app.use(express.static(path.join(__dirname, 'views')));
+
+// Rota para a página principal (redireciona para o feed ou página inicial)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
 
 // Usando as rotas definidas
 app.use(userRoutes);
-
-// Iniciar o servidor e sincronizar o banco de dados
-console.log("Tentando sincronizar com o banco de dados...");
-db.sync().then(() => {
-  app.listen(PORT, '0.0.0.0', () => {  // Adicionando '0.0.0.0' para escutar em todas as interfaces
-    console.log(`Servidor rodando na porta ${PORT}`);
-  });
-}).catch((error) => {
-  console.error('Erro ao sincronizar o banco de dados:', error);
-});
 
 // Rota para salvar dados (inserir usuário)
 app.post('/save', async (req, res) => {
@@ -56,6 +56,16 @@ app.get('/users', async (req, res) => {
     console.error('Erro ao buscar usuários:', error);
     res.status(500).json({ message: 'Erro ao buscar usuários' });
   }
+});
+
+// Iniciar o servidor e sincronizar o banco de dados
+console.log("Tentando sincronizar com o banco de dados...");
+db.sync().then(() => {
+  app.listen(PORT, '0.0.0.0', () => { // Escuta em todas as interfaces
+    console.log(`Servidor rodando na porta ${PORT}`);
+  });
+}).catch((error) => {
+  console.error('Erro ao sincronizar o banco de dados:', error);
 });
 
 module.exports = app;
