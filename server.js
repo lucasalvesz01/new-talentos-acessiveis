@@ -1,5 +1,13 @@
 // server.js
-require('dotenv').config();
+require('dotenv').config(); 
+
+console.log('Verificando variáveis de ambiente...');
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? '****' : 'NÃO DEFINIDA');
+console.log('DB_NAME:', process.env.DB_NAME);
+console.log('DB_DIALECT:', process.env.DB_DIALECT);
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');

@@ -13,3 +13,13 @@ const db = new Sequelize(
 );
 
 module.exports = db;
+
+(async () => {
+  try {
+    await db.authenticate(); // Testa a conexão
+    console.log('Conexão com o banco de dados bem-sucedida!');
+  } catch (error) {
+    console.error('Erro ao conectar ao banco de dados:', error.message);
+  }
+})();
+
