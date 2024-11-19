@@ -10,7 +10,6 @@ console.log('DB_DIALECT:', process.env.DB_DIALECT);
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 const path = require('path');
 const db = require('./config/db'); // Conexão com o banco de dados
 const userRoutes = require('./routes/userRoutes'); // Rotas de usuário
@@ -28,7 +27,6 @@ app.use((req, res, next) => {
 
 // Middlewares
 app.use(bodyParser.json());
-app.use(cors());
 
 // Configurar a pasta de arquivos estáticos (views)
 app.use(express.static(path.join(__dirname, 'views')));
