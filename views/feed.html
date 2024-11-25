@@ -12,87 +12,122 @@
             font-family: Helvetica, sans-serif;
         }
 
-            body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f9;
-        margin: 0;
-        padding: 0;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
         }
 
         header {
-        background-color: #1E86DB;
-        color: white;
-        text-align: center;
-        padding: 10px;
+            background-color: #1E86DB;
+            color: white;
+            text-align: center;
+            padding: 10px;
         }
 
         h1 {
-        margin: 0;
+            margin: 0;
         }
 
         .container {
-        max-width: 1200px;
-        margin: 20px auto;
-        padding: 10px;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 10px;
+        }
+
+        .filter-bar {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .filter-bar select,
+        .filter-bar input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
 
         .cards-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
 
         .card {
-        background-color: #ffffff;
-        border: 1px solid #dcdcdc;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        padding: 15px;
-        transition: transform 0.2s;
+            background-color: #ffffff;
+            border: 1px solid #dcdcdc;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            transition: transform 0.2s;
         }
 
         .card:hover {
-        transform: scale(1.02);
+            transform: scale(1.02);
         }
 
         .card-header {
-        font-size: 1.5em;
-        color: #1E86DB;
-        margin-bottom: 10px;
+            font-size: 1.5em;
+            color: #1E86DB;
+            margin-bottom: 10px;
         }
 
         .card-body {
-        font-size: 1em;
-        color: #555555;
+            font-size: 1em;
+            color: #555555;
         }
 
         footer {
-        text-align: center;
-        background-color: #1E86DB;
-        color: white;
-        padding: 10px;
-        margin-top: 20px;
+            text-align: center;
+            background-color: #1E86DB;
+            color: white;
+            padding: 10px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-
     <header>
         <h1>Talentos Acessíveis</h1>
         <p>Conectando talentos com oportunidades</p>
-      </header>
-    
-      <div class="container">
-        <div class="cards-grid" id="cards-container">
-          <!-- Os cards serão carregados dinamicamente aqui -->
+    </header>
+
+    <div class="container">
+        <!-- Filtros -->
+        <div class="filter-bar">
+            <label for="filter-deficiencia">Filtrar por deficiência:</label>
+            <select id="filter-deficiencia" onchange="filtrarPorDeficiencia()">
+                <option value="">Todas</option>
+                <option value="cego">Cego</option>
+                <option value="mudo">Mudo</option>
+                <option value="surdo">Surdo</option>
+                <option value="sindrome de down">Síndrome de Down</option>
+                <option value="cadeirante">Cadeirante</option>
+                <option value="autista">Autista</option>
+                <option value="surdo e mudo">Surdo e Mudo</option>
+                <option value="outros">Outros</option>
+            </select>
+            <input type="number" id="filter-idade" placeholder="Filtrar por idade" min="1">
+            <button onclick="aplicarFiltros()">Aplicar Filtros</button>
         </div>
-      </div>
-    
-      <footer>
+
+        <!-- Feed de perfis -->
+        <div class="cards-grid" id="cards-container">
+            <!-- Os cards serão carregados dinamicamente aqui -->
+        </div>
+    </div>
+
+    <footer>
         <p>© 2024 Talentos Acessíveis.</p>
-      </footer>
-    
+    </footer>
+
     <script>
+        let usuarios = []; // Variável global para armazenar os dados recebidos
+
+        // Carregar dados do feed
         async function carregarFeed() {
             try {
                 const response = await fetch('http://localhost:3000/users');
@@ -100,29 +135,8 @@
                     throw new Error("Erro ao buscar perfis: " + response.statusText);
                 }
 
-                const usuarios = await response.json();
-                console.log("Perfis recebidos do servidor:", usuarios);
-
-                const cardsContainer = document.getElementById("cards-container");
-                cardsContainer.innerHTML = ''; // Limpa o feed antes de preenchê-lo
-
-                usuarios.forEach(usuario => {
-                    const card = document.createElement("div");
-                    card.classList.add("card");
-
-                    card.innerHTML = `
-                        <div class="card-header">${usuario.usuario}</div>
-                        <div class="card-body">
-                            <p><strong>Idade:</strong> ${calcularIdade(usuario.dataNascimento)} anos</p>
-                            <p><strong>Deficiência:</strong> ${usuario.deficiencia || "Não informado"}</p>
-                            <p><strong>Habilidades:</strong>${usuario.habilidades ? usuario.habilidades.split(',').map(h => `<span>${h.trim()}</span>`).join('') : "Nenhuma habilidade cadastrada"}</p>
-                            <p><strong>Sobre você:</strong> ${usuario.sobre || "Não informado"}</p>
-                            <p><strong>E-mail:</strong> ${usuario.email || "Não informado"}</p>
-                        </div>
-                    `;
-
-                    cardsContainer.appendChild(card);
-                });
+                usuarios = await response.json(); // Salva os dados na variável global
+                renderizarCards(usuarios); // Renderiza todos os cards inicialmente
             } catch (error) {
                 console.error("Erro ao carregar o feed:", error);
             }
@@ -140,6 +154,62 @@
             return idade;
         }
 
+        // Renderiza os cards no container
+        function renderizarCards(lista) {
+            const cardsContainer = document.getElementById("cards-container");
+            cardsContainer.innerHTML = ''; // Limpa o container
+
+            lista.forEach(usuario => {
+                const card = document.createElement("div");
+                card.classList.add("card");
+
+                card.innerHTML = `
+                    <div class="card-header">${usuario.usuario}</div>
+                    <div class="card-body">
+                        <p><strong>Idade:</strong> ${calcularIdade(usuario.dataNascimento)} anos</p>
+                        <p><strong>Deficiência:</strong> ${usuario.deficiencia || "Não informado"}</p>
+                        <p><strong>Habilidades:</strong> ${usuario.habilidades || "Nenhuma habilidade cadastrada"}</p>
+                        <p><strong>Sobre você:</strong> ${usuario.sobre || "Não informado"}</p>
+                        <p><strong>E-mail:</strong> ${usuario.email || "Não informado"}</p>
+                    </div>
+                `;
+
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        function filtrarPorDeficiencia() {
+            const filtro = document.getElementById("filter-deficiencia").value;
+            if (filtro === "") {
+                renderizarFeed(usuarios); // Mostra todos os usuários
+            } else {
+                const usuariosFiltrados = usuarios.filter(usuario => usuario.deficiencia === filtro);
+                renderizarFeed(usuariosFiltrados);
+            }
+        }
+
+        // Aplica os filtros selecionados
+        function aplicarFiltros() {
+            const filtroDeficiencia = document.getElementById("filter-deficiencia").value;
+            const filtroIdade = document.getElementById("filter-idade").value;
+
+            let filtrados = usuarios;
+
+            // Filtra por deficiência
+            if (filtroDeficiencia) {
+                filtrados = filtrados.filter(usuario => usuario.deficiencia === filtroDeficiencia);
+            }
+
+            // Filtra por idade
+            if (filtroIdade) {
+                filtrados = filtrados.filter(usuario => calcularIdade(usuario.dataNascimento) == filtroIdade);
+            }
+
+            // Renderiza os cards filtrados
+            renderizarCards(filtrados);
+        }
+
+        // Inicializa o feed ao carregar a página
         window.onload = carregarFeed;
     </script>
 </body>
